@@ -71,15 +71,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = get_object_or_404(Recipe, pk=pk)
 
         if self.request.method == 'POST':
-            if ShoppingCart.objects.filter(
-                user=user,
-                recipe=recipe
-            ).exists():
-                raise exceptions.ValidationError(
-                    'Рецепт уже в списке покупок.'
-                )
-
-            ShoppingCart.objects.create(user=user, recipe=recipe)
+            ShoppingCart.objects.get_or_create(user=user, recipe=recipe)
             serializer = ShortRecipeSerializer(
                 recipe,
                 context={'request': request}

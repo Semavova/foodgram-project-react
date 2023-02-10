@@ -19,6 +19,7 @@ class Follow(models.Model):
     )
 
     class Meta:
+        ordering = ('user',)
         constraints = [
             models.UniqueConstraint(
                 name="%(app_label)s_%(class)s_unique_relationships",

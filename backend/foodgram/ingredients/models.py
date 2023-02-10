@@ -13,5 +13,10 @@ class Ingredient(models.Model):
         help_text='Единица измерения ингредиента',
     )
 
+    class Meta:
+        ordering = ('name',)
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
+
     def __str__(self):
         return self.name

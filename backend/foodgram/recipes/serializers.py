@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.core.validators import MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import exceptions, serializers
@@ -14,11 +14,9 @@ User = get_user_model()
 
 
 class RecipeIngredientsSerializer(serializers.ModelSerializer):
-    id = serializers.SerializerMethodField(method_name='get_id')
-    name = serializers.SerializerMethodField(method_name='get_name')
-    measurement_unit = serializers.SerializerMethodField(
-        method_name='get_measurement_unit'
-    )
+    id = serializers.SerializerMethodField()
+    name = serializers.SerializerMethodField()
+    measurement_unit = serializers.SerializerMethodField()
 
     def get_id(self, obj):
         return obj.ingredient.id
@@ -42,6 +40,10 @@ class CreateUpdateRecipeIngredientsSerializer(serializers.ModelSerializer):
                 1,
                 message='Количество ингредиента должно быть 1 или более.'
             ),
+            MaxValueValidator(
+                50,
+                message='Количество ингредиентов не должно быть больше 50.'
+            )
         )
     )
 
@@ -53,15 +55,9 @@ class CreateUpdateRecipeIngredientsSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     author = CustomUserSerializer(read_only=True)
     tags = TagSerializer(many=True)
-    ingredients = serializers.SerializerMethodField(
-        method_name='get_ingredients'
-    )
-    is_favorited = serializers.SerializerMethodField(
-        method_name='get_is_favorited'
-    )
-    is_in_shopping_cart = serializers.SerializerMethodField(
-        method_name='get_is_in_shopping_cart'
-    )
+    ingredients = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
 
     def get_ingredients(self, obj):
         ingredients = RecipeIngredients.objects.filter(recipe=obj)
@@ -104,6 +100,10 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
                 1,
                 message='Время приготовления должно быть 1 или более.'
             ),
+            MaxValueValidator(
+                360,
+                message='Время приготовления не должно быть больше 360.'
+            )
         )
     )
 
@@ -138,15 +138,12 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         recipe = Recipe.objects.create(author=author, **validated_data)
         recipe.tags.set(tags)
 
-        for ingredient in ingredients:
-            amount = ingredient['amount']
-            ingredient = get_object_or_404(Ingredient, pk=ingredient['id'])
-
-            RecipeIngredients.objects.create(
-                recipe=recipe,
-                ingredient=ingredient,
-                amount=amount
-            )
+        objs = (RecipeIngredients(
+            recipe=recipe,
+            ingredient=get_object_or_404(Ingredient, pk=ingredient['id']),
+            amount=ingredient['amount']
+        ) for ingredient in ingredients)
+        RecipeIngredients.objects.bulk_create(objs)
 
         return recipe
 
@@ -159,15 +156,12 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         if ingredients is not None:
             instance.ingredients.clear()
 
-            for ingredient in ingredients:
-                amount = ingredient['amount']
-                ingredient = get_object_or_404(Ingredient, pk=ingredient['id'])
-
-                RecipeIngredients.objects.update_or_create(
-                    recipe=instance,
-                    ingredient=ingredient,
-                    defaults={'amount': amount}
-                )
+            objs = (RecipeIngredients(
+                recipe=instance,
+                ingredient=get_object_or_404(Ingredient, pk=ingredient['id']),
+                defaults={'amount': ingredient['amount']}
+            ) for ingredient in ingredients)
+            RecipeIngredients.objects.bulk_create(objs)
 
         return super().update(instance, validated_data)
 
