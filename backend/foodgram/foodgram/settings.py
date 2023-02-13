@@ -8,7 +8,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.getenv('SECRET_KEY', default='xxx')
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS', '*'), '*']
 
@@ -71,11 +71,11 @@ else:
     DATABASES = {
         'default': {
             'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
-            'NAME': os.getenv('DB_NAME', default='None'),
-            'USER': os.getenv('POSTGRES_USER', default='None'),
-            'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='None'),
-            'HOST': os.getenv('DB_HOST', default='None'),
-            'PORT': os.getenv('DB_PORT', default='None')
+            'NAME': os.getenv('DB_NAME', 'postgres'),
+            'USER': os.getenv('POSTGRES_USER', 'postgres_user'),
+            'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres_password'),
+            'HOST': os.getenv('DB_HOST', '127.0.0.1'),
+            'PORT': os.getenv('DB_PORT', '5432')
         }
     }
 
