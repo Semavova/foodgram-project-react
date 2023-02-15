@@ -20,16 +20,16 @@ class Follow(models.Model):
 
     class Meta:
         ordering = ('user',)
-        constraints = [
-            models.UniqueConstraint(
-                name="%(app_label)s_%(class)s_unique_relationships",
-                fields=['user', 'author'],
-            ),
+        constraints = (
             models.CheckConstraint(
-                name="%(app_label)s_%(class)s_prevent_self_follow",
                 check=~models.Q(user=models.F('author')),
+                name='no_self_subscribe'
             ),
-        ]
+            models.UniqueConstraint(
+                fields=('user', 'author'),
+                name='unique_subscription'
+            )
+        )
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
 

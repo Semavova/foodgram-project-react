@@ -141,8 +141,8 @@ class Favorite(models.Model):
 
         constraints = (
             models.UniqueConstraint(
-                name="%(app_label)s_%(class)s_unique_relationships",
-                fields=['user', 'recipe'],
+                fields=('user', 'recipe'),
+                name='unique_favorite_recipe'
             ),
         )
 
@@ -171,8 +171,8 @@ class ShoppingCart(models.Model):
 
         constraints = (
             models.UniqueConstraint(
-                name="%(app_label)s_%(class)s_unique_relationships",
-                fields=['user', 'recipe'],
+                fields=('user', 'recipe'),
+                name='unique_shopping_list_recipe'
             ),
         )
 
