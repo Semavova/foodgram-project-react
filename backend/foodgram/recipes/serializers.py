@@ -14,6 +14,9 @@ User = get_user_model()
 
 
 class RecipeIngredientsSerializer(serializers.ModelSerializer):
+    id = serializers.SerializerMethodField(read_only=True)
+    name = serializers.SerializerMethodField(read_only=True)
+    measurement_unit = serializers.SerializerMethodField(read_only=True)
 
     def get_id(self, obj):
         return obj.ingredient.id
@@ -38,7 +41,7 @@ class CreateUpdateRecipeIngredientsSerializer(serializers.ModelSerializer):
                 message='Количество ингредиента должно быть 1 или более.'
             ),
             MaxValueValidator(
-                50,
+                5000,
                 message='Количество ингредиентов не должно быть больше 50.'
             )
         )
@@ -52,6 +55,9 @@ class CreateUpdateRecipeIngredientsSerializer(serializers.ModelSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     author = CustomUserSerializer(read_only=True)
     tags = TagSerializer(many=True)
+    ingredients = serializers.SerializerMethodField(read_only=True)
+    is_favorited = serializers.SerializerMethodField(read_only=True)
+    is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
 
     def get_ingredients(self, obj):
         ingredients = RecipeIngredients.objects.filter(recipe=obj)
