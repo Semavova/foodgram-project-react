@@ -42,7 +42,7 @@ class CreateUpdateRecipeIngredientsSerializer(serializers.ModelSerializer):
             ),
             MaxValueValidator(
                 5000,
-                message='Количество ингредиентов не должно быть больше 50.'
+                message='Количество ингредиента не должно быть больше 5000.'
             )
         )
     )
