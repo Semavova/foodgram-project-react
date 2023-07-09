@@ -151,7 +151,6 @@ API фреймворк: Django REST (контейнер backend)
 Контейнер frontend взаимодействует с контейнером backend посредством API-запросов.
 
 ---
-## 7. Об авторе <a id=7></a>
+Автор: [Владимир Семочкин](https://github.com/Semavova)
 
-Семочкин Владимир
 ![workflow](https://github.com/Semavova/foodgram-project-react/actions/workflows/foodgram_workflow.yml/badge.svg)
